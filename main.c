@@ -152,6 +152,10 @@ void SystemClockConfigUpdate(){
 	RCC->CFGR &= ~(3<<0); // önce bitleri temizle
 	RCC->CFGR |= (1<<1);
 
+	// PLL selected as system clock
+	RCC->CFGR &= ~(3<<0);
+	RCC->CFGR |= (1<<1);
+	
 	while((RCC->CFGR & (3<<2)) != (2<<2)); //Switch’in tamamlandığını kontrol et
 
 	// AHB Prescaler(HPRE biti) = 1 olmalı ki HCLK=168MHz olsun
@@ -164,6 +168,9 @@ void SystemClockConfigUpdate(){
 	//  APB1=42, APB2=84 MHz de çalışsın diye PPRE1=4, PPRE2=2 olarak ayalarnmalı RCC_CFGR register ında
 	RCC->CFGR &= ~(0x3F<<10); // bitleri temizle
 	RCC->CFGR |= (1<<15) | (1<<12) | (1<<10);
+
+	SystemCoreClockUpdate(); // Donanımda değiştirdiğimiz SYSCLK frekansını CMSIS tarafındaki SystemCoreClock değişkenine güncelleyerek,
+	                         // yazılımın ve kütüphanelerin doğru CPU frekansını kullanmasını sağlamaktır.
 }
 
 /**
